@@ -1,7 +1,7 @@
 
 file(GLOB_RECURSE SOURCE_FILES 
     src/*.cpp)
-add_library(Procedure SHARED ${SOURCE_FILES})
+add_library(libClasses SHARED ${SOURCE_FILES})
 
 # Собираем все подкаталоги include
 ###
@@ -14,9 +14,9 @@ foreach(dir ${PROJECT_INCLUDE_DIRS})
     endif()
 endforeach()
 
-target_include_directories(Procedure PUBLIC ${DIR_LIST})
+target_include_directories(libClasses PUBLIC ${DIR_LIST})
 ###
-target_include_directories(Procedure PUBLIC include)
+target_include_directories(libClasses PUBLIC include)
 
 
 
