@@ -22,7 +22,7 @@ public:
         auto& rc = recordClass;
         if (!rc) {
             rc = std::make_shared<RecordClass>(prefix+std::string{typeid(CurrentClass).name()}); 
-            count = doAction(rc,sql_create);   
+            count = doAction?doAction(rc,sql_create):0;   
         #ifdef DEBUG
             std::cout << "initStatic table name: "<<rc->getName()<<std::endl; 
         #endif
@@ -105,7 +105,8 @@ protected:
         return &((reinterpret_cast<FieldValue<Reference<RefType>>*>(currentData[to_lower(name)].get()))->Value());
     }
 
-    void loadFromDB(const std::string& query) {
+    void loadFromDB(const std::string& query); 
+    //{
         // pqxx::result res = InfoBase::getInstance().execute_query(query);
         // if (res.empty()) { throw std::runtime_error("Record not found"); }
         
@@ -115,7 +116,7 @@ protected:
         //         setValue(name, convertFieldVariant(field, res[0][name]));
         // }
         // savedData = cloneData(currentData);
-    }
+    //}
 
     static FieldValueMap cloneData(const FieldValueMap& data) {
         FieldValueMap clone;
