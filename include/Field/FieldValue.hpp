@@ -125,3 +125,40 @@ public:
         return derived && name == derived->name && value == derived->value;
     }
 };
+
+inline const char* VariantToCStr(const Variant& var) {
+    struct Visitor {
+        const char* operator()(int val) const {
+            static thread_local char buffer[32];
+            snprintf(buffer, sizeof(buffer), "%d", val);
+            return buffer;
+        }
+        
+        const char* operator()(double val) const {
+            static thread_local char buffer[32];
+            snprintf(buffer, sizeof(buffer), "%f", val);
+            return buffer;
+        }
+        
+        const char* operator()(bool val) const {
+            return val ? "true" : "false";
+        }
+        
+        const char* operator()(const DateTime& val) const {
+            static thread_local std::string str = val.toString();
+            return str.c_str();
+        }
+        
+        const char* operator()(const std::string& val) const {
+            return val.c_str();
+        }
+        
+        const char* operator()(const ReferenceBase& val) const {
+            static thread_local char buffer[32];
+            snprintf(buffer, sizeof(buffer), "%d", val.id());
+            return buffer;
+        }
+    };
+    
+    return std::visit(Visitor{}, var);
+}
