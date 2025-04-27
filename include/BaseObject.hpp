@@ -118,6 +118,36 @@ protected:
         // savedData = cloneData(currentData);
     //}
 
+    inline Variant convertFieldVariant(const Field& field, const std::string& aValue) {
+        switch (field.getType().getKind()) {
+            case FieldType::Kind::REFERENCE:
+            case FieldType::Kind::INTEGER:
+                return std::stoi(aValue);
+            case FieldType::Kind::NUMERIC:
+                return std::stod(aValue);
+            case FieldType::Kind::BOOLEAN:
+                return aValue == "0" ? false : true;
+            case FieldType::Kind::DATETIME:
+                return DateTime{aValue};
+            case FieldType::Kind::STRING:
+            case FieldType::Kind::TEXT:
+                return aValue;
+            default:
+                throw std::runtime_error("Unsupported field type");
+        }
+    }
+
+    void loadFromDB2(std::unordered_map<std::string,std::string> res) 
+    {
+        if (res.empty()) { throw std::runtime_error("Record not found"); }
+        for (const auto& field : recordClass->getFields()) {
+            const std::string& name = field.getName();
+            if(!field.isPrimaryKey())
+                setValue(name, convertFieldVariant(field, res[name]));
+        }
+        savedData = cloneData(currentData);
+    }
+
     static FieldValueMap cloneData(const FieldValueMap& data) {
         FieldValueMap clone;
         for (const auto& [name, field] : data) 

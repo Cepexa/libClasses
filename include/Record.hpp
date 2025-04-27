@@ -23,14 +23,17 @@ public:
         return record;
     }
 
-    static SelfPtr Open(int id,std::function<void(std::string,std::string,std::string)> execute) 
+    static SelfPtr Open(int id,std::function<
+        std::unordered_map<std::string,std::string>
+        (std::string,std::string,std::string)> execute) 
     {
         #ifdef DEBUG
             std::cout<<"Open RECORD "<< Base::recordClass->getName() <<" id: "<<id<< std::endl;
         #endif           
         auto record = SelfPtr(new CurrentClass(id));
         auto namet = Base::recordClass->getName();
-        execute("*",namet,"id="+ std::to_string(id));
+
+        record->loadFromDB2(execute("*",namet,"id="+ std::to_string(id)));
 
         return record;
     }
